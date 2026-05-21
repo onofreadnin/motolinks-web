@@ -2,9 +2,9 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 const metrics = [
-  { value: '24/7', label: 'ride planning access' },
-  { value: '30 days', label: 'data deletion window' },
-  { value: 'Maps', label: 'route handoff ready' },
+  { value: '24/7', label: 'ride planning' },
+  { value: '30d', label: 'data requests' },
+  { value: 'Maps', label: 'route handoff' },
 ];
 
 const features = [
@@ -35,15 +35,13 @@ export default function Home() {
   return (
     <>
       <section className="hero">
-        <div className="hero__media" aria-hidden="true">
-          <img src="/brand/motolinks-banner.png" alt="" />
-        </div>
+        <div className="hero__media" aria-hidden="true" />
         <div className="container hero__content">
           <p className="eyebrow">Ride. Connect. Explore.</p>
-          <h1>MotoLinks turns motorcycle rides into a connected local network.</h1>
+          <h1>MotoLinks for riders who move together.</h1>
           <p className="hero__lede">
-            A rider-first platform for discovering routes, creating ride posts,
-            and moving from community intent to real-world destinations.
+            Discover routes, create ride posts, and connect local motorcycle
+            communities from one focused platform.
           </p>
           <div className="hero__actions">
             <a className="button button--primary" href="mailto:support@motolinks.app">
@@ -54,6 +52,20 @@ export default function Home() {
             </Link>
           </div>
         </div>
+        <aside className="hero__glass-stack" aria-label="MotoLinks product highlights">
+          <div className="glass-card glass-card--primary">
+            <span>Live Ride Posts</span>
+            <strong>Route-ready meetups</strong>
+          </div>
+          <div className="glass-card">
+            <span>Map Handoff</span>
+            <strong>Start to destination</strong>
+          </div>
+          <div className="glass-card glass-card--compact">
+            <span>Community</span>
+            <strong>Built for crews</strong>
+          </div>
+        </aside>
       </section>
 
       <section className="section section--surface">
@@ -63,9 +75,8 @@ export default function Home() {
             <h2>A sharper home for ride discovery.</h2>
           </div>
           <p className="section__intro">
-            MotoLinks positions motorcycle culture as a practical network:
-            routes, rider profiles, destination details, safety expectations,
-            and simple trust pages that make the product easier to evaluate.
+            MotoLinks brings routes, rider profiles, destination details, and
+            simple trust pages into one practical product experience.
           </p>
         </div>
         <div className="container metrics">
@@ -97,14 +108,14 @@ export default function Home() {
 
       <section className="section section--brand">
         <div className="container brand-panel">
-          <img
-            className="brand-panel__image"
-            src="/brand/motolinks-banner.png"
-            alt="MotoLinks brand banner"
-          />
+          <div className="brand-panel__visual" aria-hidden="true">
+            <span className="glass-tile glass-tile--large" />
+            <span className="glass-tile glass-tile--small" />
+            <span className="glass-tile glass-tile--rail" />
+          </div>
           <div className="brand-panel__content">
             <p className="eyebrow">Launch-ready foundation</p>
-            <h2>Polished enough for first impressions, structured for growth.</h2>
+            <h2>Polished for first impressions, structured for growth.</h2>
             <ul className="check-list">
               {growthSignals.map((signal) => (
                 <li key={signal}>{signal}</li>
