@@ -44,7 +44,7 @@ export default function Home() {
             communities from one focused platform.
           </p>
           <div className="hero__actions">
-            <a className="button button--primary" href="mailto:support@motolinks.app">
+            <a className="button button--primary" href="mailto:support@motolinks.org">
               Start a conversation
             </a>
             <Link className="button button--secondary" to="/privacy-policy">

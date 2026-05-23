@@ -37,7 +37,7 @@ export default function Header() {
           ))}
         </nav>
 
-        <a className="header__cta" href="mailto:support@motolinks.app">
+        <a className="header__cta" href="mailto:support@motolinks.org">
           Partner with us
         </a>
       </div>
