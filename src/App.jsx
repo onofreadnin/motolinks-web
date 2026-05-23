@@ -6,6 +6,7 @@ import PrivacyPolicy from './pages/PrivacyPolicy';
 import DeleteData from './pages/DeleteData';
 import Terms from './pages/Terms';
 import Contact from './pages/Contact';
+import ChildSafety from './pages/ChildSafety';
 
 export default function App() {
   return (
@@ -18,6 +19,7 @@ export default function App() {
           <Route path="/data-deletion" element={<DeleteData />} />
           <Route path="/terms" element={<Terms />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/child-safety" element={<ChildSafety />} />
         </Routes>
       </Layout>
     </BrowserRouter>
