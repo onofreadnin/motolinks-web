@@ -3,10 +3,10 @@ import { NavLink } from 'react-router-dom';
 
 const navItems = [
   { to: '/', label: 'Platform' },
-  { to: '/privacy-policy', label: 'Privacy' },
-  { to: '/delete-data', label: 'Delete Data' },
-  { to: '/terms', label: 'Terms' },
-  { to: '/contact', label: 'Contact' },
+  { to: '/privacy-policy', label: 'Privacy Policy' },
+  { to: '/terms', label: 'Terms of Service' },
+  { to: '/data-deletion', label: 'Data Deletion' },
+  { to: '/contact', label: 'Support / Contact' },
 ];
 
 export default function Header() {

@@ -1,41 +1,61 @@
 import React from 'react';
 
 export default function DeleteData() {
+  const lastUpdated = 'May 22, 2026';
+
   return (
     <article className="container content-page">
       <p className="eyebrow">Data rights</p>
-      <h1>Data Deletion Request</h1>
-      <p className="lead">
-        If you would like to delete your MotoLinks account and associated
-        personal data, please follow these steps.
+      <h1>Account &amp; Data Deletion</h1>
+      <p className="lead">Last updated: {lastUpdated}</p>
+      <p>
+        MotoLinks respects your right to control your personal information and account data.
       </p>
 
-      <ol className="step-list">
-        <li>
-          Send an email to{' '}
-          <a href="mailto:support@motolinks.app?subject=MotoLinks%20Data%20Deletion%20Request">
-            support@motolinks.app
-          </a>{' '}
-          from the email address associated with your MotoLinks account.
-        </li>
-        <li>
-          Use the subject line: <strong>MotoLinks Data Deletion Request</strong>.
-        </li>
-        <li>
-          In the body of the email, include your account details and request for
-          deletion.
-        </li>
-        <li>Please allow up to 30 days for your request to be processed.</li>
-      </ol>
-
+      <h2>Requesting Deletion</h2>
       <p>
-        We will delete your account profile, ride posts, saved ride data,
-        uploaded photos, and related personal data. We may retain certain
-        records if required by law or for security and fraud prevention.
+        You may request deletion of your MotoLinks account and associated personal information by
+        contacting us at <a href="mailto:support@motolinks.org">support@motolinks.org</a>.
       </p>
       <p>
-        For further assistance, contact us at{' '}
-        <a href="mailto:support@motolinks.app">support@motolinks.app</a>.
+        For security purposes, requests should be sent from the email address connected to your
+        MotoLinks account. We may ask for account ownership verification before processing.
+      </p>
+
+      <h2>What Happens After a Verified Request</h2>
+      <ul className="content-list">
+        <li>Delete or anonymize personal account information.</li>
+        <li>Remove associated profile data where applicable.</li>
+        <li>Remove or disassociate certain user-generated content where appropriate.</li>
+      </ul>
+
+      <h2>Information That May Be Retained</h2>
+      <p>
+        MotoLinks may retain certain information where reasonably necessary to:
+      </p>
+      <ul className="content-list">
+        <li>Comply with legal obligations.</li>
+        <li>Resolve disputes and enforce Terms of Service.</li>
+        <li>Detect or prevent fraud, abuse, or harmful activity.</li>
+        <li>Maintain security, moderation, and platform integrity.</li>
+        <li>Comply with backup, archival, and operational requirements.</li>
+      </ul>
+      <p>
+        Some residual or cached information may remain in backups or archives for a limited
+        period before permanent deletion.
+      </p>
+
+      <h2>Third-Party Services</h2>
+      <p>
+        Some information may be stored or processed by trusted third-party providers used by
+        MotoLinks. Data removal from those systems is handled in line with applicable provider
+        processes and retention obligations.
+      </p>
+
+      <h2>Contact Us</h2>
+      <p>
+        For account or data deletion questions, contact{' '}
+        <a href="mailto:support@motolinks.org">support@motolinks.org</a>.
       </p>
     </article>
   );

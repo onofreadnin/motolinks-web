@@ -18,9 +18,9 @@ export default function Footer() {
 
         <nav className="footer__nav" aria-label="Footer navigation">
           <Link to="/privacy-policy">Privacy Policy</Link>
-          <Link to="/delete-data">Delete Data</Link>
-          <Link to="/terms">Terms</Link>
-          <Link to="/contact">Contact</Link>
+          <Link to="/terms">Terms of Service</Link>
+          <Link to="/data-deletion">Data Deletion</Link>
+          <Link to="/contact">Support / Contact</Link>
         </nav>
 
         <p className="footer__legal">&copy; {currentYear} MotoLinks. All rights reserved.</p>
