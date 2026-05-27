@@ -7,6 +7,7 @@ const navItems = [
   { to: '/terms', label: 'Terms of Service' },
   { to: '/data-deletion', label: 'Data Deletion' },
   { to: '/contact', label: 'Support / Contact' },
+  { to: '/admin/login', label: 'Admin' },
 ];
 
 export default function Header() {
