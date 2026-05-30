@@ -126,7 +126,7 @@ h3 {
 }
 
 .container {
-  width: min(100% - 2rem, var(--container));
+  width: min(100% - 1rem, var(--container));
   margin-inline: auto;
 }
 
@@ -134,17 +134,17 @@ h3 {
   position: sticky;
   top: 0;
   z-index: 10;
-  border-bottom: 1px solid var(--border-subtle);
-  background: rgba(5, 6, 8, 0.78);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(3, 4, 6, 0.94);
   backdrop-filter: blur(18px);
 }
 
 .header__inner {
   min-height: 64px;
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
-  gap: var(--space-4);
+  gap: 0.65rem;
 }
 
 .brand,
@@ -170,22 +170,33 @@ h3 {
   font-size: 1rem;
 }
 
+.brand__logo {
+  width: clamp(170px, 22vw, 252px);
+  height: auto;
+  object-fit: contain;
+}
+
 .nav {
   justify-self: center;
   display: flex;
   align-items: center;
-  gap: var(--space-2);
-  padding: 0.35rem;
-  border: 1px solid var(--border-subtle);
+  gap: 0.2rem;
+  padding: 0.28rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: var(--radius-pill);
-  background: rgba(255, 255, 255, 0.04);
+  background:
+    linear-gradient(180deg, rgba(20, 24, 34, 0.9) 0%, rgba(9, 11, 16, 0.96) 100%),
+    rgba(5, 6, 8, 0.96);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 14px 36px rgba(0, 0, 0, 0.38);
 }
 
 .nav__link {
-  padding: 0.45rem 0.8rem;
+  padding: 0.4rem 0.68rem;
   border-radius: var(--radius-pill);
   color: var(--color-steel-300);
-  font-size: 0.9rem;
+  font-size: 0.82rem;
   font-weight: 700;
   text-decoration: none;
 }
@@ -198,19 +209,61 @@ h3 {
 
 .header__cta,
 .button {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   min-height: 40px;
-  padding: 0.65rem 1rem;
+  padding: 0.62rem 0.92rem;
+  border: 1px solid transparent;
   border-radius: var(--radius-pill);
   font-weight: 900;
   text-decoration: none;
+  overflow: hidden;
+  transition:
+    transform 180ms ease,
+    box-shadow 220ms ease,
+    border-color 220ms ease,
+    background-color 220ms ease;
+}
+
+.header__cta {
+  white-space: nowrap;
+}
+
+@media (min-width: 1260px) {
+  .header__inner {
+    gap: 0.5rem;
+  }
+
+  .nav__link {
+    padding: 0.38rem 0.58rem;
+    font-size: 0.8rem;
+  }
+}
+
+.header__cta::before,
+.button::before {
+  position: absolute;
+  inset: -1px auto -1px -36%;
+  width: 28%;
+  content: "";
+  opacity: 0;
+  transform: skewX(-20deg) translateX(-20%);
+  transition: transform 380ms ease, opacity 320ms ease;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.36) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
 }
 
 .header__cta,
 .button--primary {
   color: var(--color-white);
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.42);
   background: linear-gradient(135deg, var(--color-red-500), var(--color-red-600));
   box-shadow: var(--shadow-red);
 }
@@ -219,6 +272,38 @@ h3 {
   border: 1px solid var(--border-strong);
   color: var(--color-white);
   background: rgba(255, 255, 255, 0.08);
+}
+
+.header__cta:hover,
+.button:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.14),
+    0 18px 48px rgba(237, 18, 28, 0.24);
+}
+
+.header__cta:hover::before,
+.button:hover::before {
+  opacity: 1;
+  transform: skewX(-20deg) translateX(430%);
+}
+
+.button--primary:hover,
+.header__cta:hover,
+.button--primary:focus-visible,
+.header__cta:focus-visible {
+  color: var(--color-white);
+}
+
+.button--primary::before,
+.header__cta::before {
+  opacity: 0.58;
+  mix-blend-mode: soft-light;
+}
+
+.button--secondary:hover {
+  border-color: rgba(237, 18, 28, 0.38);
+  background: rgba(237, 18, 28, 0.17);
 }
 
 .hero {
@@ -424,6 +509,70 @@ h3 {
   color: var(--color-steel-300);
 }
 
+.impact-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-4);
+}
+
+.impact-stat,
+.testimonial-card,
+.cta-card {
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--surface-card);
+  box-shadow: var(--shadow-panel);
+}
+
+.impact-stat {
+  padding: var(--space-5);
+}
+
+.impact-stat strong {
+  display: block;
+  color: var(--color-white);
+  font-size: clamp(1.75rem, 3.2vw, 2.8rem);
+  line-height: 1;
+}
+
+.impact-stat span {
+  color: var(--color-steel-300);
+  font-weight: 700;
+}
+
+.testimonial-grid,
+.cta-card-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+}
+
+.testimonial-card,
+.cta-card {
+  margin: 0;
+  padding: var(--space-5);
+}
+
+.testimonial-card p,
+.cta-card p {
+  color: var(--color-steel-300);
+}
+
+.testimonial-card cite {
+  display: inline-block;
+  margin-top: var(--space-3);
+  color: var(--color-white);
+  font-style: normal;
+  font-weight: 800;
+}
+
+.cta-card {
+  display: grid;
+  gap: var(--space-3);
+  align-content: start;
+}
+
 .section--brand {
   padding-top: 0;
 }
@@ -440,87 +589,131 @@ h3 {
 
 .brand-panel__visual {
   position: relative;
-  min-height: 260px;
-  display: grid;
-  place-items: center;
+  min-height: 320px;
+  display: flex;
+  align-items: flex-end;
+  padding: var(--space-4);
   overflow: hidden;
   background:
-    radial-gradient(ellipse at 28% 30%, rgba(255, 255, 255, 0.13), transparent 14rem),
-    radial-gradient(ellipse at 72% 58%, rgba(237, 18, 28, 0.28), transparent 18rem),
-    linear-gradient(135deg, #050608 0%, #11141d 48%, #270509 100%);
+    radial-gradient(ellipse at 24% 24%, rgba(255, 255, 255, 0.1), transparent 15rem),
+    radial-gradient(ellipse at 78% 72%, rgba(237, 18, 28, 0.24), transparent 18rem),
+    linear-gradient(145deg, #050608 0%, #0d121b 52%, #26080e 100%);
 }
 
 .brand-panel__visual::before {
   position: absolute;
-  inset: 14% 13%;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 28px;
+  inset: 0;
   content: "";
-  background:
-    radial-gradient(ellipse at 22% 18%, rgba(255, 255, 255, 0.28), transparent 7rem),
-    radial-gradient(ellipse at 80% 76%, rgba(237, 18, 28, 0.26), transparent 11rem),
-    linear-gradient(145deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.035) 48%, rgba(237, 18, 28, 0.08));
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.34),
-    inset 0 -28px 70px rgba(0, 0, 0, 0.3),
-    0 24px 72px rgba(0, 0, 0, 0.36);
-  backdrop-filter: blur(18px) saturate(145%);
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(5, 6, 8, 0.16) 0%, rgba(5, 6, 8, 0.82) 100%);
+  z-index: 1;
 }
 
 .brand-panel__visual::after {
   position: absolute;
-  inset: 16% 16% auto auto;
-  width: 44%;
-  height: 54%;
-  border-radius: var(--radius-pill);
+  right: -12%;
+  bottom: -22%;
+  width: 54%;
+  height: 58%;
   content: "";
   background:
-    radial-gradient(ellipse at 50% 0%, rgba(255, 255, 255, 0.32), transparent 62%),
-    linear-gradient(135deg, rgba(255, 255, 255, 0.24), transparent 65%);
-  filter: blur(10px);
-  opacity: 0.7;
-  transform: rotate(-18deg);
+    radial-gradient(ellipse at 50% 50%, rgba(237, 18, 28, 0.4), rgba(237, 18, 28, 0) 72%);
+  filter: blur(18px);
+  opacity: 0.55;
+  transform: rotate(-12deg);
+  z-index: 1;
 }
 
-.glass-tile {
+.brand-carousel {
   position: absolute;
-  display: block;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 18px;
-  background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.17), rgba(255, 255, 255, 0.035)),
-    rgba(10, 12, 17, 0.24);
+  inset: 6% 5% 20%;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 20px;
+  overflow: hidden;
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.26),
-    0 22px 58px rgba(0, 0, 0, 0.28);
-  backdrop-filter: blur(18px) saturate(145%);
+    0 20px 52px rgba(0, 0, 0, 0.42),
+    0 0 0 1px rgba(255, 255, 255, 0.05);
+  z-index: 0;
 }
 
-.glass-tile--large {
-  left: 12%;
-  top: 24%;
-  width: 42%;
-  height: 46%;
+.brand-carousel__slide {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transform: scale(1.03);
+  animation: brandCarouselFade 20s infinite;
 }
 
-.glass-tile--small {
-  right: 18%;
-  top: 20%;
-  width: 24%;
-  height: 30%;
-  background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.2), rgba(237, 18, 28, 0.08)),
-    rgba(10, 12, 17, 0.18);
+.brand-carousel__slide:nth-child(1) { animation-delay: 0s; }
+.brand-carousel__slide:nth-child(2) { animation-delay: 5s; }
+.brand-carousel__slide:nth-child(3) { animation-delay: 10s; }
+.brand-carousel__slide:nth-child(4) { animation-delay: 15s; }
+
+.brand-carousel__dots {
+  position: absolute;
+  left: 50%;
+  bottom: calc(20% + 0.8rem);
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  transform: translateX(-50%);
 }
 
-.glass-tile--rail {
-  left: 22%;
-  bottom: 20%;
-  width: 52%;
-  height: 10px;
+.brand-carousel__dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.38);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.24);
+  animation: brandCarouselDot 20s infinite;
+}
+
+.brand-carousel__dot:nth-child(1) { animation-delay: 0s; }
+.brand-carousel__dot:nth-child(2) { animation-delay: 5s; }
+.brand-carousel__dot:nth-child(3) { animation-delay: 10s; }
+.brand-carousel__dot:nth-child(4) { animation-delay: 15s; }
+
+.brand-panel__kpis {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.brand-kpi {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 0.3rem 0.7rem;
+  border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: var(--radius-pill);
-  background: linear-gradient(90deg, transparent, rgba(237, 18, 28, 0.74), rgba(255, 255, 255, 0.5), transparent);
-  box-shadow: 0 0 30px rgba(237, 18, 28, 0.36);
+  color: var(--color-white);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  background: rgba(8, 10, 15, 0.68);
+  backdrop-filter: blur(10px);
+}
+
+@keyframes brandCarouselFade {
+  0% { opacity: 0; transform: scale(1.03); }
+  4% { opacity: 1; transform: scale(1.0); }
+  23% { opacity: 1; transform: scale(1.0); }
+  27% { opacity: 0; transform: scale(1.03); }
+  100% { opacity: 0; transform: scale(1.03); }
+}
+
+@keyframes brandCarouselDot {
+  0% { background: rgba(255, 255, 255, 0.35); transform: scale(1); }
+  4% { background: rgba(237, 18, 28, 0.95); transform: scale(1.18); }
+  23% { background: rgba(237, 18, 28, 0.95); transform: scale(1.18); }
+  27% { background: rgba(255, 255, 255, 0.35); transform: scale(1); }
+  100% { background: rgba(255, 255, 255, 0.35); transform: scale(1); }
 }
 
 .brand-panel__content {
@@ -1066,6 +1259,9 @@ h3 {
   .split,
   .metrics,
   .feature-grid,
+  .impact-grid,
+  .testimonial-grid,
+  .cta-card-grid,
   .brand-panel,
   .footer__inner {
     grid-template-columns: 1fr;
@@ -1073,6 +1269,10 @@ h3 {
 
   .brand-panel__visual {
     min-height: 220px;
+  }
+
+  .brand-carousel {
+    inset: 7% 5% 24%;
   }
 
   .footer__nav {

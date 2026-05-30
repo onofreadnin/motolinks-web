@@ -15,13 +15,7 @@ export default function Header() {
     <header className="site-header">
       <div className="container header__inner">
         <NavLink to="/" className="brand" aria-label="MotoLinks home">
-          <img
-            className="brand__mark"
-            src="/brand/motolinks-icon.png"
-            alt=""
-            aria-hidden="true"
-          />
-          <span className="brand__text">MotoLinks</span>
+          <img className="brand__logo" src="/brand/motolinks-wordmark.png" alt="MotoLinks" />
         </NavLink>
 
         <nav className="nav" aria-label="Primary navigation">

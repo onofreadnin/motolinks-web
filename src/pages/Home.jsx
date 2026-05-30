@@ -31,6 +31,47 @@ const growthSignals = [
   'Scalable design system prepared for future SaaS landing pages',
 ];
 
+const riderStats = [
+  { value: '4.8/5', label: 'ride planning satisfaction' },
+  { value: '< 45s', label: 'typical route post creation time' },
+  { value: '99.9%', label: 'platform availability target' },
+];
+
+const testimonials = [
+  {
+    quote:
+      'MotoLinks helps our weekend group lock meetup points fast without long message threads.',
+    author: 'Sydney Group Ride Lead',
+  },
+  {
+    quote:
+      'The route-first flow is simple and practical. We can plan and move in minutes.',
+    author: 'Melbourne Adventure Rider',
+  },
+];
+
+const ctaCards = [
+  {
+    title: 'Book a Product Demo',
+    body: 'Walk through ride creation, audience setup, and moderation controls with our team.',
+    actionLabel: 'Schedule Demo',
+    href: 'mailto:support@motolinks.org?subject=MotoLinks%20Product%20Demo',
+  },
+  {
+    title: 'See Privacy and Safety',
+    body: 'Review policies and trust foundations before onboarding your rider community.',
+    actionLabel: 'Open Trust Center',
+    to: '/privacy-policy',
+  },
+];
+
+const communityBanners = [
+  '/brand/community_banner_01.png',
+  '/brand/community_banner_02.png',
+  '/brand/community_banner_03.png',
+  '/brand/community_banner_04.png',
+];
+
 export default function Home() {
   return (
     <>
@@ -106,12 +147,72 @@ export default function Home() {
         </div>
       </section>
 
+      <section className="section section--surface">
+        <div className="container">
+          <div className="section__heading">
+            <p className="eyebrow">Proof and next steps</p>
+            <h2>See rider impact and move straight to action.</h2>
+          </div>
+          <div className="impact-grid" aria-label="MotoLinks trust and conversion highlights">
+            {riderStats.map((item) => (
+              <article className="impact-stat" key={item.label}>
+                <strong>{item.value}</strong>
+                <span>{item.label}</span>
+              </article>
+            ))}
+          </div>
+          <div className="testimonial-grid">
+            {testimonials.map((item) => (
+              <blockquote className="testimonial-card" key={item.author}>
+                <p>{item.quote}</p>
+                <cite>{item.author}</cite>
+              </blockquote>
+            ))}
+          </div>
+          <div className="cta-card-grid">
+            {ctaCards.map((item) => (
+              <article className="cta-card" key={item.title}>
+                <h3>{item.title}</h3>
+                <p>{item.body}</p>
+                {item.href ? (
+                  <a className="button button--primary" href={item.href}>
+                    {item.actionLabel}
+                  </a>
+                ) : (
+                  <Link className="button button--secondary" to={item.to}>
+                    {item.actionLabel}
+                  </Link>
+                )}
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <section className="section section--brand">
         <div className="container brand-panel">
           <div className="brand-panel__visual" aria-hidden="true">
-            <span className="glass-tile glass-tile--large" />
-            <span className="glass-tile glass-tile--small" />
-            <span className="glass-tile glass-tile--rail" />
+            <div className="brand-carousel">
+              {communityBanners.map((src, index) => (
+                <img
+                  key={src}
+                  className="brand-carousel__slide"
+                  src={src}
+                  alt=""
+                  loading={index === 0 ? 'eager' : 'lazy'}
+                />
+              ))}
+            </div>
+            <div className="brand-carousel__dots">
+              {communityBanners.map((src, index) => (
+                <span className="brand-carousel__dot" key={`${src}-dot-${index}`} />
+              ))}
+            </div>
+            <div className="brand-panel__kpis">
+              <span className="brand-kpi">Fast route setup</span>
+              <span className="brand-kpi">Audience controls</span>
+              <span className="brand-kpi">Map-ready details</span>
+            </div>
           </div>
           <div className="brand-panel__content">
             <p className="eyebrow">Launch-ready foundation</p>
