@@ -9,6 +9,8 @@ import DeleteData from './pages/DeleteData';
 import Terms from './pages/Terms';
 import Contact from './pages/Contact';
 import ChildSafety from './pages/ChildSafety';
+import CookiesPolicy from './pages/CookiesPolicy';
+import PartnerWithUs from './pages/PartnerWithUs';
 import AdminLogin from './pages/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminBugReports from './pages/AdminBugReports';
@@ -30,6 +32,8 @@ export default function App() {
           <Route path="/terms" element={<PublicPage><Terms /></PublicPage>} />
           <Route path="/contact" element={<PublicPage><Contact /></PublicPage>} />
           <Route path="/child-safety" element={<PublicPage><ChildSafety /></PublicPage>} />
+          <Route path="/cookies-policy" element={<PublicPage><CookiesPolicy /></PublicPage>} />
+          <Route path="/partner-with-us" element={<PublicPage><PartnerWithUs /></PublicPage>} />
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<AdminDashboard />} />

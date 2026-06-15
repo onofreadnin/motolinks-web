@@ -6,6 +6,7 @@ const navItems = [
   { to: '/privacy-policy', label: 'Privacy Policy' },
   { to: '/terms', label: 'Terms of Service' },
   { to: '/data-deletion', label: 'Data Deletion' },
+  { to: '/cookies-policy', label: 'Cookies' },
   { to: '/contact', label: 'Support / Contact' },
   { to: '/admin/login', label: 'Admin' },
 ];
@@ -32,9 +33,9 @@ export default function Header() {
           ))}
         </nav>
 
-        <a className="header__cta" href="mailto:support@motolinks.org">
+        <NavLink className="header__cta" to="/partner-with-us">
           Partner with us
-        </a>
+        </NavLink>
       </div>
     </header>
   );

@@ -19,7 +19,9 @@ export default function Footer() {
         <nav className="footer__nav" aria-label="Footer navigation">
           <Link to="/privacy-policy">Privacy Policy</Link>
           <Link to="/terms">Terms of Service</Link>
+          <Link to="/cookies-policy">Cookies Policy</Link>
           <Link to="/data-deletion">Data Deletion</Link>
+          <Link to="/partner-with-us">Partner With Us</Link>
           <Link to="/contact">Support / Contact</Link>
         </nav>
 
