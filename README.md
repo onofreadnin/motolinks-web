@@ -9,6 +9,7 @@ Create `.env` from `.env.example` and set:
 ```
 VITE_SUPABASE_URL=
 VITE_SUPABASE_ANON_KEY=
+VITE_APP_LOGIN_URL=motolinks://login
 ```
 
 Admin login uses Supabase email/password auth and requires the signed-in user's `profiles.is_admin` value to be `true`. Do not add a service-role key to this web app.
@@ -25,6 +26,29 @@ Admin routes:
 - `/admin`
 - `/admin/bugs`
 - `/admin/reports`
+
+## Supabase email verification and password reset
+
+Supabase auth emails should redirect to this web app, not directly to Expo Go.
+
+Add this URL to Supabase Auth redirect URLs:
+
+```
+https://YOUR_WEB_DOMAIN/auth/action
+```
+
+Set the mobile app environment variable to the same deployed URL:
+
+```
+EXPO_PUBLIC_AUTH_ACTION_URL=https://YOUR_WEB_DOMAIN/auth/action
+```
+
+The mobile app sends:
+
+- Email confirmation links to `/auth/action?action=confirm-email`
+- Password reset links to `/auth/action?action=reset-password`
+
+The web route exchanges the Supabase auth code, confirms email links, and shows the password reset form only for verified email sessions.
 
 ## Building locally
 

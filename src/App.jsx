@@ -15,6 +15,7 @@ import AdminLogin from './pages/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminBugReports from './pages/AdminBugReports';
 import AdminModerationReports from './pages/AdminModerationReports';
+import AuthAction from './pages/AuthAction';
 
 function PublicPage({ children }) {
   return <Layout>{children}</Layout>;
@@ -34,6 +35,7 @@ export default function App() {
           <Route path="/child-safety" element={<PublicPage><ChildSafety /></PublicPage>} />
           <Route path="/cookies-policy" element={<PublicPage><CookiesPolicy /></PublicPage>} />
           <Route path="/partner-with-us" element={<PublicPage><PartnerWithUs /></PublicPage>} />
+          <Route path="/auth/action" element={<AuthAction />} />
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<AdminDashboard />} />

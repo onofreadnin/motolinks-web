@@ -13,7 +13,7 @@ export const supabase = hasSupabaseConfig
       auth: {
         autoRefreshToken: true,
         persistSession: true,
-        detectSessionInUrl: true,
+        detectSessionInUrl: false,
       },
     })
   : null;
