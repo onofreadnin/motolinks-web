@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Navigate, Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
 import AdminLayout from './components/AdminLayout';
 import { AdminAuthProvider } from './context/AdminAuthContext';
@@ -21,12 +21,31 @@ function PublicPage({ children }) {
   return <Layout>{children}</Layout>;
 }
 
+function AuthRootRedirect({ children }) {
+  const params = new URLSearchParams(window.location.search);
+  const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+  const hasAuthParams =
+    params.has('code') ||
+    params.has('type') ||
+    params.has('error') ||
+    hashParams.has('access_token') ||
+    hashParams.has('refresh_token') ||
+    hashParams.has('type') ||
+    hashParams.has('error');
+
+  if (hasAuthParams) {
+    return <Navigate to={`/auth/action${window.location.search}${window.location.hash}`} replace />;
+  }
+
+  return children;
+}
+
 export default function App() {
   return (
     <BrowserRouter>
       <AdminAuthProvider>
         <Routes>
-          <Route path="/" element={<PublicPage><Home /></PublicPage>} />
+          <Route path="/" element={<AuthRootRedirect><PublicPage><Home /></PublicPage></AuthRootRedirect>} />
           <Route path="/privacy-policy" element={<PublicPage><PrivacyPolicy /></PublicPage>} />
           <Route path="/delete-data" element={<PublicPage><DeleteData /></PublicPage>} />
           <Route path="/data-deletion" element={<PublicPage><DeleteData /></PublicPage>} />
