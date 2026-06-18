@@ -61,6 +61,27 @@ function getAuthCopy(mode, status, params) {
   const errorCode = params.get('error_code');
   const expired = errorCode === 'otp_expired' || /expired/i.test(params.get('error_description') || '');
 
+  if (status === 'success') {
+    if (mode === 'reset') {
+      return {
+        eyebrow: 'Password reset',
+        title: 'Password updated.',
+      };
+    }
+
+    if (mode === 'confirm') {
+      return {
+        eyebrow: 'Email verification',
+        title: 'Email confirmed.',
+      };
+    }
+
+    return {
+      eyebrow: 'Account link',
+      title: 'All set.',
+    };
+  }
+
   if (status === 'error') {
     if (expired) {
       if (mode === 'reset') {
@@ -248,20 +269,13 @@ export default function AuthAction() {
       );
       if (error) throw error;
 
-      try {
-        await withTimeout(
-          supabase.auth.signOut(),
-          'Your password was updated, but we could not sign you out automatically.',
-        );
-      } catch {
-        // The password update is complete; sign-out cleanup should not hide that success.
-      }
-
       setStatus('success');
       setMessage('Your password has been updated. Sign in with your new password in the MotoLinks app.');
       setPassword('');
       setConfirmPassword('');
       setPasswordVisible(false);
+
+      void supabase.auth.signOut().catch(() => undefined);
     } catch (error) {
       setStatus('ready');
       setMessage(friendlyError(error));
