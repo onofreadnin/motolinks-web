@@ -27,6 +27,10 @@ function friendlyError(error) {
   return error?.message || 'This account link is invalid or has expired.';
 }
 
+function isInvalidOrExpiredLinkMessage(message) {
+  return /invalid|expired/i.test(message || '');
+}
+
 function withTimeout(promise, message) {
   let timeoutId;
   const timeout = new Promise((_, reject) => {
@@ -57,9 +61,10 @@ function resolveMode(params) {
   return 'account';
 }
 
-function getAuthCopy(mode, status, params) {
+function getAuthCopy(mode, status, params, currentMessage = '') {
   const errorCode = params.get('error_code');
-  const expired = errorCode === 'otp_expired' || /expired/i.test(params.get('error_description') || '');
+  const errorMessage = params.get('error_description') || params.get('error') || currentMessage;
+  const expired = errorCode === 'otp_expired' || isInvalidOrExpiredLinkMessage(errorMessage);
 
   if (status === 'success') {
     if (mode === 'reset') {
@@ -107,10 +112,18 @@ function getAuthCopy(mode, status, params) {
       };
     }
 
+    if (mode === 'confirm' && isInvalidOrExpiredLinkMessage(errorMessage)) {
+      return {
+        eyebrow: 'Email verification',
+        title: 'Verification link expired.',
+        message: 'This link may have already been used. Try signing in to MotoLinks, or request a fresh confirmation email from the app.',
+      };
+    }
+
     return {
       eyebrow: mode === 'reset' ? 'Password reset' : mode === 'confirm' ? 'Email verification' : 'Account link',
       title: 'We could not open this link.',
-      message: friendlyError({ message: params.get('error_description') || params.get('error') }),
+      message: friendlyError({ message: errorMessage }),
     };
   }
 
@@ -143,7 +156,7 @@ export default function AuthAction() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const copy = getAuthCopy(mode, status, params);
+  const copy = getAuthCopy(mode, status, params, message);
   const displayMessage = status === 'error' ? copy.message : message;
   const passwordReady = password.trim().length >= 6;
   const passwordsMatch = password.length > 0 && password === confirmPassword;
