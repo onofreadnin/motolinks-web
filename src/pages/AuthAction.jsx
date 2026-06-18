@@ -116,9 +116,13 @@ export default function AuthAction() {
   const [mode, setMode] = useState(resolveMode(params));
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordVisible, setPasswordVisible] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const copy = getAuthCopy(mode, status, params);
   const displayMessage = status === 'error' ? copy.message : message;
+  const passwordReady = password.trim().length >= 6;
+  const passwordsMatch = password.length > 0 && password === confirmPassword;
+  const statusTone = status === 'success' ? 'success' : status === 'error' ? 'error' : status === 'ready' ? 'ready' : 'loading';
 
   useEffect(() => {
     let active = true;
@@ -250,6 +254,7 @@ export default function AuthAction() {
       setMessage('Your password has been updated. Sign in with your new password in the MotoLinks app.');
       setPassword('');
       setConfirmPassword('');
+      setPasswordVisible(false);
     } catch (error) {
       setStatus('ready');
       setMessage(friendlyError(error));
@@ -261,48 +266,77 @@ export default function AuthAction() {
   return (
     <main className="auth-action-screen">
       <section className="auth-action-card">
-        <a className="admin-auth-brand" href="/">
-          <img src="/brand/motolinks-icon.png" alt="" aria-hidden="true" />
-          <span>MotoLinks</span>
-        </a>
+        <div className="auth-action-brand-row">
+          <a className="admin-auth-brand" href="/">
+            <img src="/brand/motolinks-icon.png" alt="" aria-hidden="true" />
+            <span>MotoLinks</span>
+          </a>
+          <span className={`auth-action-status-dot auth-action-status-dot--${statusTone}`} aria-hidden="true" />
+        </div>
 
-        <p className="eyebrow">{copy.eyebrow}</p>
-        <h1>{copy.title}</h1>
-        <p className={status === 'error' ? 'auth-action-message auth-action-message--error' : 'auth-action-message'}>
-          {displayMessage}
-        </p>
+        <div className="auth-action-heading">
+          <p className="eyebrow">{copy.eyebrow}</p>
+          <h1>{copy.title}</h1>
+          <p className={`auth-action-message auth-action-message--${statusTone}`}>
+            {displayMessage}
+          </p>
+        </div>
 
         {status === 'loading' ? (
-          <div className="auth-action-loader" aria-label="Loading" />
+          <div className="auth-action-loading">
+            <div className="auth-action-loader" aria-label="Loading" />
+            <span>Checking your secure link</span>
+          </div>
         ) : null}
 
         {status === 'ready' && mode === 'reset' ? (
           <form className="auth-action-form" onSubmit={submitPassword}>
-            <label>
-              <span>New password</span>
-              <input
-                autoComplete="new-password"
-                disabled={submitting}
-                minLength={6}
-                onChange={(event) => setPassword(event.target.value)}
-                required
-                type="password"
-                value={password}
-              />
-            </label>
+            <div className="auth-action-field">
+              <label htmlFor="new-password">New password</label>
+              <div className="auth-action-input-wrap">
+                <input
+                  autoComplete="new-password"
+                  disabled={submitting}
+                  id="new-password"
+                  minLength={6}
+                  onChange={(event) => setPassword(event.target.value)}
+                  required
+                  type={passwordVisible ? 'text' : 'password'}
+                  value={password}
+                />
+                <button
+                  className="auth-action-ghost-button"
+                  disabled={submitting}
+                  onClick={() => setPasswordVisible((value) => !value)}
+                  type="button"
+                >
+                  {passwordVisible ? 'Hide' : 'Show'}
+                </button>
+              </div>
+            </div>
 
-            <label>
-              <span>Confirm password</span>
+            <div className="auth-action-field">
+              <label htmlFor="confirm-password">Confirm password</label>
               <input
                 autoComplete="new-password"
                 disabled={submitting}
+                id="confirm-password"
                 minLength={6}
                 onChange={(event) => setConfirmPassword(event.target.value)}
                 required
-                type="password"
+                type={passwordVisible ? 'text' : 'password'}
                 value={confirmPassword}
               />
-            </label>
+            </div>
+
+            <div className="auth-action-checklist" aria-live="polite">
+              <span className={passwordReady ? 'auth-action-check auth-action-check--done' : 'auth-action-check'}>
+                At least 6 characters
+              </span>
+              <span className={passwordsMatch ? 'auth-action-check auth-action-check--done' : 'auth-action-check'}>
+                Passwords match
+              </span>
+            </div>
 
             <button className="button button--primary auth-action-submit" disabled={submitting} type="submit">
               {submitting ? 'Updating...' : 'Update password'}
@@ -313,7 +347,7 @@ export default function AuthAction() {
         {status === 'success' ? (
           <div className="auth-action-actions">
             <a className="button button--primary" href={APP_LOGIN_URL}>Open MotoLinks app</a>
-            <Link className="button button--secondary" to="/">Back to website</Link>
+            <Link className="button button--secondary" to="/">MotoLinks website</Link>
           </div>
         ) : null}
 
@@ -323,6 +357,10 @@ export default function AuthAction() {
             <Link className="button button--secondary" to="/contact">Contact support</Link>
           </div>
         ) : null}
+
+        <p className="auth-action-footnote">
+          MotoLinks will never ask for your current password or verification code by email.
+        </p>
       </section>
     </main>
   );
