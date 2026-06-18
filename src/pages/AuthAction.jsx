@@ -142,14 +142,20 @@ export default function AuthAction() {
         let session = null;
 
         if (code) {
-          const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+          const { data, error } = await withTimeout(
+            supabase.auth.exchangeCodeForSession(code),
+            'This password reset link took too long to open. Request a fresh reset link and try again.',
+          );
           if (error) throw error;
           session = data.session;
         } else if (accessToken && refreshToken) {
-          const { data, error } = await supabase.auth.setSession({
-            access_token: accessToken,
-            refresh_token: refreshToken,
-          });
+          const { data, error } = await withTimeout(
+            supabase.auth.setSession({
+              access_token: accessToken,
+              refresh_token: refreshToken,
+            }),
+            'This password reset link took too long to open. Request a fresh reset link and try again.',
+          );
           if (error) throw error;
           session = data.session;
         } else {
