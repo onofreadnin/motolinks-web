@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { hasSupabaseConfig, supabase } from '../lib/supabase';
 
 const APP_LOGIN_URL = import.meta.env.VITE_APP_LOGIN_URL ?? 'motolinks://login';
+const AUTH_REQUEST_TIMEOUT_MS = 15000;
 
 function collectAuthParams() {
   const searchParams = new URLSearchParams(window.location.search);
@@ -22,16 +23,102 @@ function friendlyError(error) {
   return error?.message || 'This account link is invalid or has expired.';
 }
 
+function withTimeout(promise, message) {
+  let timeoutId;
+  const timeout = new Promise((_, reject) => {
+    timeoutId = window.setTimeout(() => reject(new Error(message)), AUTH_REQUEST_TIMEOUT_MS);
+  });
+
+  return Promise.race([promise, timeout]).finally(() => {
+    window.clearTimeout(timeoutId);
+  });
+}
+
+function clearAuthParamsFromUrl() {
+  window.history.replaceState(null, document.title, window.location.pathname);
+}
+
+function resolveMode(params) {
+  const requestedAction = params.get('action');
+  const type = params.get('type');
+
+  if (requestedAction === 'reset-password' || type === 'recovery') {
+    return 'reset';
+  }
+
+  if (requestedAction === 'confirm-email' || type === 'signup' || type === 'email_change' || type === 'magiclink') {
+    return 'confirm';
+  }
+
+  return 'account';
+}
+
+function getAuthCopy(mode, status, params) {
+  const errorCode = params.get('error_code');
+  const expired = errorCode === 'otp_expired' || /expired/i.test(params.get('error_description') || '');
+
+  if (status === 'error') {
+    if (expired) {
+      if (mode === 'reset') {
+        return {
+          eyebrow: 'Password reset',
+          title: 'Reset link expired.',
+          message: 'For your security, password reset links can only be used for a short time. Open MotoLinks and request a fresh reset link.',
+        };
+      }
+
+      if (mode === 'confirm') {
+        return {
+          eyebrow: 'Email verification',
+          title: 'Verification link expired.',
+          message: 'For your security, email verification links can only be used for a short time. Open MotoLinks and request a fresh confirmation email.',
+        };
+      }
+
+      return {
+        eyebrow: 'Account link',
+        title: 'This link has expired.',
+        message: 'For your security, account links can only be used for a short time. Open MotoLinks and request a fresh password reset or confirmation email.',
+      };
+    }
+
+    return {
+      eyebrow: mode === 'reset' ? 'Password reset' : mode === 'confirm' ? 'Email verification' : 'Account link',
+      title: 'We could not open this link.',
+      message: friendlyError({ message: params.get('error_description') || params.get('error') }),
+    };
+  }
+
+  if (mode === 'reset') {
+    return {
+      eyebrow: 'Password reset',
+      title: 'Secure your account.',
+    };
+  }
+
+  if (mode === 'confirm') {
+    return {
+      eyebrow: 'Email verification',
+      title: 'Email confirmed.',
+    };
+  }
+
+  return {
+    eyebrow: 'Account link',
+    title: 'Finishing account link.',
+  };
+}
+
 export default function AuthAction() {
   const params = useMemo(() => collectAuthParams(), []);
-  const requestedAction = params.get('action');
-  const initialType = params.get('type');
   const [status, setStatus] = useState('loading');
   const [message, setMessage] = useState('Finishing your secure MotoLinks account link...');
-  const [mode, setMode] = useState(requestedAction === 'reset-password' || initialType === 'recovery' ? 'reset' : 'confirm');
+  const [mode, setMode] = useState(resolveMode(params));
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const copy = getAuthCopy(mode, status, params);
+  const displayMessage = status === 'error' ? copy.message : message;
 
   useEffect(() => {
     let active = true;
@@ -70,14 +157,17 @@ export default function AuthAction() {
         }
 
         if (!active) return;
+        clearAuthParamsFromUrl();
 
-        const resolvedType = params.get('type');
-        const resolvedMode = requestedAction === 'reset-password' || resolvedType === 'recovery' ? 'reset' : 'confirm';
+        const resolvedMode = resolveMode(params);
         setMode(resolvedMode);
 
         if (resolvedMode === 'reset') {
           if (!session?.user?.email_confirmed_at) {
-            await supabase.auth.signOut();
+            await withTimeout(
+              supabase.auth.signOut(),
+              'The password reset session could not be closed. Please refresh and try again.',
+            );
             setStatus('error');
             setMessage('Please verify your email before resetting your MotoLinks password.');
             return;
@@ -88,7 +178,10 @@ export default function AuthAction() {
           return;
         }
 
-        await supabase.auth.signOut();
+        await withTimeout(
+          supabase.auth.signOut(),
+          'The account session could not be closed. Please refresh and try again.',
+        );
         setStatus('success');
         setMessage('Your email is confirmed. You can now sign in to MotoLinks.');
       } catch (error) {
@@ -103,7 +196,7 @@ export default function AuthAction() {
     return () => {
       active = false;
     };
-  }, [params, requestedAction]);
+  }, [params]);
 
   const submitPassword = async (event) => {
     event.preventDefault();
@@ -121,11 +214,32 @@ export default function AuthAction() {
     }
 
     setSubmitting(true);
+    setMessage('Updating your password...');
     try {
-      const { error } = await supabase.auth.updateUser({ password: password.trim() });
+      const { data: sessionData, error: sessionError } = await withTimeout(
+        supabase.auth.getSession(),
+        'Could not confirm your reset session. Request a fresh password reset link and try again.',
+      );
+      if (sessionError) throw sessionError;
+      if (!sessionData.session) {
+        throw new Error('This reset session is no longer active. Request a fresh password reset link and try again.');
+      }
+
+      const { error } = await withTimeout(
+        supabase.auth.updateUser({ password: password.trim() }),
+        'Password update timed out. Your password was not confirmed as updated. Please try again with a fresh reset link.',
+      );
       if (error) throw error;
 
-      await supabase.auth.signOut();
+      try {
+        await withTimeout(
+          supabase.auth.signOut(),
+          'Your password was updated, but we could not sign you out automatically.',
+        );
+      } catch {
+        // The password update is complete; sign-out cleanup should not hide that success.
+      }
+
       setStatus('success');
       setMessage('Your password has been updated. Sign in with your new password in the MotoLinks app.');
       setPassword('');
@@ -146,10 +260,10 @@ export default function AuthAction() {
           <span>MotoLinks</span>
         </a>
 
-        <p className="eyebrow">{mode === 'reset' ? 'Password reset' : 'Email verification'}</p>
-        <h1>{mode === 'reset' ? 'Secure your account.' : 'Email confirmed.'}</h1>
+        <p className="eyebrow">{copy.eyebrow}</p>
+        <h1>{copy.title}</h1>
         <p className={status === 'error' ? 'auth-action-message auth-action-message--error' : 'auth-action-message'}>
-          {message}
+          {displayMessage}
         </p>
 
         {status === 'loading' ? (
@@ -199,8 +313,8 @@ export default function AuthAction() {
 
         {status === 'error' ? (
           <div className="auth-action-actions">
-            <Link className="button button--primary" to="/contact">Contact support</Link>
-            <Link className="button button--secondary" to="/">Back to website</Link>
+            <a className="button button--primary" href={APP_LOGIN_URL}>Open MotoLinks app</a>
+            <Link className="button button--secondary" to="/contact">Contact support</Link>
           </div>
         ) : null}
       </section>
