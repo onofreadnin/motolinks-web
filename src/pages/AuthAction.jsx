@@ -20,6 +20,10 @@ function collectAuthParams() {
 }
 
 function friendlyError(error) {
+  if (error?.code === 'same_password') {
+    return 'Choose a password that is different from your current password.';
+  }
+
   return error?.message || 'This account link is invalid or has expired.';
 }
 
@@ -123,6 +127,9 @@ export default function AuthAction() {
   const passwordReady = password.trim().length >= 6;
   const passwordsMatch = password.length > 0 && password === confirmPassword;
   const statusTone = status === 'success' ? 'success' : status === 'error' ? 'error' : status === 'ready' ? 'ready' : 'loading';
+  const formNotice = status === 'ready' && mode === 'reset' && message !== 'Choose a new password for your MotoLinks account.'
+    ? message
+    : '';
 
   useEffect(() => {
     let active = true;
@@ -337,6 +344,12 @@ export default function AuthAction() {
                 Passwords match
               </span>
             </div>
+
+            {formNotice ? (
+              <p className="auth-action-inline-alert" role="alert">
+                {formNotice}
+              </p>
+            ) : null}
 
             <button className="button button--primary auth-action-submit" disabled={submitting} type="submit">
               {submitting ? 'Updating...' : 'Update password'}
