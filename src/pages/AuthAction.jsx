@@ -229,12 +229,10 @@ export default function AuthAction() {
           return;
         }
 
-        await withTimeout(
-          supabase.auth.signOut(),
-          'The account session could not be closed. Please refresh and try again.',
-        );
         setStatus('success');
         setMessage('Your email is confirmed. You can now sign in to MotoLinks.');
+
+        void supabase.auth.signOut().catch(() => undefined);
       } catch (error) {
         if (!active) return;
         setStatus('error');
