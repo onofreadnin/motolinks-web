@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { hasSupabaseConfig, supabase } from '../lib/supabase';
 
 const APP_LOGIN_URL = import.meta.env.VITE_APP_LOGIN_URL ?? 'motolinks://login';
-const AUTH_REQUEST_TIMEOUT_MS = 15000;
+const AUTH_REQUEST_TIMEOUT_MS = 45000;
 
 function collectAuthParams() {
   const searchParams = new URLSearchParams(window.location.search);
@@ -274,10 +274,7 @@ export default function AuthAction() {
         throw new Error('This reset session is no longer active. Request a fresh password reset link and try again.');
       }
 
-      const { error } = await withTimeout(
-        supabase.auth.updateUser({ password: password.trim() }),
-        'Password update timed out. Your password was not confirmed as updated. Please try again with a fresh reset link.',
-      );
+      const { error } = await supabase.auth.updateUser({ password: password.trim() });
       if (error) throw error;
 
       setStatus('success');
