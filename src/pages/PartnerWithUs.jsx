@@ -38,7 +38,7 @@ export default function PartnerWithUs() {
           Tell us who you support, where you operate, and what kind of rider outcome you want
           to create.
         </p>
-        <a className="button button--primary" href="mailto:support@motolinks.org?subject=MotoLinks%20Partnership">
+        <a className="button button--primary" href="mailto:support@motolinks.com.au?subject=MotoLinks%20Partnership">
           Contact Partnerships
         </a>
       </div>

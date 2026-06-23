@@ -25,6 +25,48 @@ const features = [
   },
 ];
 
+const appFeatureWalkthrough = [
+  {
+    title: 'Host a ride',
+    body:
+      'Create a ride with meetup, start, destination, date, stands-up time, rider limit, license requirement, pace, toll preference, and public or private audience controls.',
+  },
+  {
+    title: 'Find rides and riders',
+    body:
+      'Browse nearby rides, open ride cards, view rider profiles, use profile radius settings, and discover available riders while respecting privacy and blocking rules.',
+  },
+  {
+    title: 'Chat and group messages',
+    body:
+      'Start direct messages, use ride group conversations, open threads at the latest message, see unread counts, and swipe conversations to mute, delete, or leave.',
+  },
+  {
+    title: 'Alerts and notifications',
+    body:
+      'Receive ride activity, invite, message, and community alerts with compact unread states, in-app badges, and first-open prompts for new activity.',
+  },
+  {
+    title: 'Profile and bike garage',
+    body:
+      'Manage profile details, avatar, cover photo, nearby rider visibility, notification radius, message preferences, and motorcycle garage photos.',
+  },
+  {
+    title: 'Safety and moderation',
+    body:
+      'Report riders, block accounts, hide sensitive user IDs from public screens, and use admin review workflows for moderation reports and app bug reports.',
+  },
+];
+
+const demoFlow = [
+  'Create a public ride with validated route details',
+  'Open address search with map-powered suggestions',
+  'Join or leave a ride and open the ride group chat',
+  'Search public rider profiles or switch to Friends',
+  'Review unread messages, alerts, mute, and delete flows',
+  'Update privacy, notification radius, and media uploads',
+];
+
 const growthSignals = [
   'Mobile-first rider network with clear niche positioning',
   'Compliance pages ready for app store review and user trust',
@@ -55,7 +97,7 @@ const ctaCards = [
     title: 'Book a Product Demo',
     body: 'Walk through ride creation, audience setup, and moderation controls with our team.',
     actionLabel: 'Schedule Demo',
-    href: 'mailto:support@motolinks.org?subject=MotoLinks%20Product%20Demo',
+    href: 'mailto:support@motolinks.com.au?subject=MotoLinks%20Product%20Demo',
   },
   {
     title: 'See Privacy and Safety',
@@ -85,7 +127,7 @@ export default function Home() {
             communities from one focused platform.
           </p>
           <div className="hero__actions">
-            <a className="button button--primary" href="mailto:support@motolinks.org">
+            <a className="button button--primary" href="mailto:support@motolinks.com.au">
               Start a conversation
             </a>
             <Link className="button button--secondary" to="/privacy-policy">
@@ -144,6 +186,47 @@ export default function Home() {
               </article>
             ))}
           </div>
+        </div>
+      </section>
+
+      <section className="section section--surface">
+        <div className="container split">
+          <div>
+            <p className="eyebrow">App functionality</p>
+            <h2>A clear walkthrough of what MotoLinks includes.</h2>
+          </div>
+          <p className="section__intro">
+            This overview acts as a public demonstration of the mobile app feature set:
+            ride creation, rider discovery, messaging, alerts, profile controls,
+            media upload limits, and safety workflows.
+          </p>
+        </div>
+        <div className="container app-feature-grid">
+          {appFeatureWalkthrough.map((feature) => (
+            <article className="app-feature-card" key={feature.title}>
+              <h3>{feature.title}</h3>
+              <p>{feature.body}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="section">
+        <div className="container demo-panel">
+          <div className="demo-panel__content">
+            <p className="eyebrow">Demonstration mode</p>
+            <h2>Review the complete product flow without exposing live rider data.</h2>
+            <p>
+              For app review, partner review, or support walkthroughs, MotoLinks can be
+              demonstrated with seeded rides, sample profiles, unread alerts, message
+              threads, and admin moderation examples.
+            </p>
+          </div>
+          <ol className="demo-flow" aria-label="MotoLinks demonstration flow">
+            {demoFlow.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ol>
         </div>
       </section>
 

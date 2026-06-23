@@ -39,7 +39,7 @@ export default function CookiesPolicy() {
       <h2>More Information</h2>
       <p>
         For broader data practices, review our <Link to="/privacy-policy">Privacy Policy</Link>
-        {' '}or contact <a href="mailto:support@motolinks.org">support@motolinks.org</a>.
+        {' '}or contact <a href="mailto:support@motolinks.com.au">support@motolinks.com.au</a>.
       </p>
     </article>
   );

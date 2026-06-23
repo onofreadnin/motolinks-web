@@ -15,7 +15,7 @@ export default function DeleteData() {
       <h2>Requesting Deletion</h2>
       <p>
         You may request deletion of your MotoLinks account and associated personal information by
-        contacting us at <a href="mailto:support@motolinks.org">support@motolinks.org</a>.
+        contacting us at <a href="mailto:support@motolinks.com.au">support@motolinks.com.au</a>.
       </p>
       <p>
         For security purposes, requests should be sent from the email address connected to your
@@ -55,7 +55,7 @@ export default function DeleteData() {
       <h2>Contact Us</h2>
       <p>
         For account or data deletion questions, contact{' '}
-        <a href="mailto:support@motolinks.org">support@motolinks.org</a>.
+        <a href="mailto:support@motolinks.com.au">support@motolinks.com.au</a>.
       </p>
     </article>
   );

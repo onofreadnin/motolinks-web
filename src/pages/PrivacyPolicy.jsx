@@ -103,7 +103,7 @@ export default function PrivacyPolicy() {
       <h2>Contact Us</h2>
       <p>
         If you have questions about this Privacy Policy or your data, contact us at{' '}
-        <a href="mailto:support@motolinks.org">support@motolinks.org</a>.
+        <a href="mailto:support@motolinks.com.au">support@motolinks.com.au</a>.
       </p>
     </article>
   );

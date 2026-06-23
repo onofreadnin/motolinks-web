@@ -13,7 +13,7 @@ export default function Contact() {
 
       <div className="info-card">
         <span>Email</span>
-        <a href="mailto:support@motolinks.org">support@motolinks.org</a>
+        <a href="mailto:support@motolinks.com.au">support@motolinks.com.au</a>
       </div>
 
       <p>

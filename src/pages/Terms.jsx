@@ -99,7 +99,7 @@ export default function Terms() {
       <h2>Contact Us</h2>
       <p>
         Questions about these Terms can be sent to{' '}
-        <a href="mailto:support@motolinks.org">support@motolinks.org</a>.
+        <a href="mailto:support@motolinks.com.au">support@motolinks.com.au</a>.
       </p>
     </article>
   );
