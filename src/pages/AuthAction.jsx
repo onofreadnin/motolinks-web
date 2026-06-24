@@ -274,8 +274,14 @@ export default function AuthAction() {
         throw new Error('This reset session is no longer active. Request a fresh password reset link and try again.');
       }
 
-      const { error } = await supabase.auth.updateUser({ password: password.trim() });
+      const { data: updateData, error } = await withTimeout(
+        supabase.auth.updateUser({ password: password.trim() }),
+        'Password update timed out. If your new password works in the app, you can sign in now. Otherwise request a fresh reset link and try again.',
+      );
       if (error) throw error;
+      if (!updateData?.user) {
+        throw new Error('Password update was not confirmed. Request a fresh reset link and try again.');
+      }
 
       setStatus('success');
       setMessage('Your password has been updated. Sign in with your new password in the MotoLinks app.');
