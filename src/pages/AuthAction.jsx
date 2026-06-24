@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { hasSupabaseConfig, supabase } from '../lib/supabase';
+import { createAuthActionClient, hasSupabaseConfig } from '../lib/supabase';
 
 const APP_LOGIN_URL = import.meta.env.VITE_APP_LOGIN_URL ?? 'motolinks://login';
 const AUTH_REQUEST_TIMEOUT_MS = 45000;
@@ -149,6 +149,7 @@ function getAuthCopy(mode, status, params, currentMessage = '') {
 
 export default function AuthAction() {
   const params = useMemo(() => collectAuthParams(), []);
+  const authClient = useMemo(() => createAuthActionClient(), []);
   const [status, setStatus] = useState('loading');
   const [message, setMessage] = useState('Finishing your secure MotoLinks account link...');
   const [mode, setMode] = useState(resolveMode(params));
@@ -169,7 +170,7 @@ export default function AuthAction() {
     let active = true;
 
     async function completeLink() {
-      if (!hasSupabaseConfig || !supabase) {
+      if (!hasSupabaseConfig || !authClient) {
         setStatus('error');
         setMessage('Supabase is not configured for this website.');
         return;
@@ -188,14 +189,14 @@ export default function AuthAction() {
 
         if (code) {
           const { data, error } = await withTimeout(
-            supabase.auth.exchangeCodeForSession(code),
+            authClient.auth.exchangeCodeForSession(code),
             'This password reset link took too long to open. Request a fresh reset link and try again.',
           );
           if (error) throw error;
           session = data.session;
         } else if (accessToken && refreshToken) {
           const { data, error } = await withTimeout(
-            supabase.auth.setSession({
+            authClient.auth.setSession({
               access_token: accessToken,
               refresh_token: refreshToken,
             }),
@@ -216,7 +217,7 @@ export default function AuthAction() {
         if (resolvedMode === 'reset') {
           if (!session?.user?.email_confirmed_at) {
             await withTimeout(
-              supabase.auth.signOut(),
+              authClient.auth.signOut(),
               'The password reset session could not be closed. Please refresh and try again.',
             );
             setStatus('error');
@@ -232,7 +233,7 @@ export default function AuthAction() {
         setStatus('success');
         setMessage('Your email is confirmed. You can now sign in to MotoLinks.');
 
-        void supabase.auth.signOut().catch(() => undefined);
+        void authClient.auth.signOut().catch(() => undefined);
       } catch (error) {
         if (!active) return;
         setStatus('error');
@@ -245,7 +246,7 @@ export default function AuthAction() {
     return () => {
       active = false;
     };
-  }, [params]);
+  }, [authClient, params]);
 
   const submitPassword = async (event) => {
     event.preventDefault();
@@ -265,17 +266,8 @@ export default function AuthAction() {
     setSubmitting(true);
     setMessage('Updating your password...');
     try {
-      const { data: sessionData, error: sessionError } = await withTimeout(
-        supabase.auth.getSession(),
-        'Could not confirm your reset session. Request a fresh password reset link and try again.',
-      );
-      if (sessionError) throw sessionError;
-      if (!sessionData.session) {
-        throw new Error('This reset session is no longer active. Request a fresh password reset link and try again.');
-      }
-
       const { data: updateData, error } = await withTimeout(
-        supabase.auth.updateUser({ password: password.trim() }),
+        authClient.auth.updateUser({ password: password.trim() }),
         'Password update timed out. If your new password works in the app, you can sign in now. Otherwise request a fresh reset link and try again.',
       );
       if (error) throw error;
@@ -289,7 +281,7 @@ export default function AuthAction() {
       setConfirmPassword('');
       setPasswordVisible(false);
 
-      void supabase.auth.signOut().catch(() => undefined);
+      void authClient.auth.signOut().catch(() => undefined);
     } catch (error) {
       setStatus('ready');
       setMessage(friendlyError(error));
