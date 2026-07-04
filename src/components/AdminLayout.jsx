@@ -9,6 +9,15 @@ const adminNavItems = [
   { to: '/admin/reports', label: 'Moderation' },
 ];
 
+function notifyAdminRouteSelected(to) {
+  window.dispatchEvent(new CustomEvent('motolinks-admin-route-selected', { detail: { to } }));
+}
+
+function isCurrentAdminRoute(pathname, item) {
+  if (item.end) return pathname === item.to;
+  return pathname === item.to || pathname.startsWith(`${item.to}/`);
+}
+
 export default function AdminLayout() {
   const { isAdmin, isSupabaseReady, logout, profile, ready } = useAdminAuth();
   const location = useLocation();
@@ -57,6 +66,12 @@ export default function AdminLayout() {
               key={item.to}
               to={item.to}
               end={item.end}
+              onClick={(event) => {
+                if (isCurrentAdminRoute(location.pathname, item)) {
+                  event.preventDefault();
+                  notifyAdminRouteSelected(item.to);
+                }
+              }}
               className={({ isActive }) =>
                 isActive ? 'admin-nav__link admin-nav__link--active' : 'admin-nav__link'
               }

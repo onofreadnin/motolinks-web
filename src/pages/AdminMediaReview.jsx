@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { getMediaReviewItems, reviewMediaItem } from '../lib/adminApi';
 
 const PAGE_SIZE = 15;
@@ -27,6 +28,7 @@ function mediaLabel(type) {
 }
 
 export default function AdminMediaReview() {
+  const location = useLocation();
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -52,6 +54,17 @@ export default function AdminMediaReview() {
 
   useEffect(() => {
     void loadItems();
+  }, [location.key]);
+
+  useEffect(() => {
+    const onAdminRouteSelected = (event) => {
+      if (event.detail?.to === '/admin/media') {
+        void loadItems();
+      }
+    };
+
+    window.addEventListener('motolinks-admin-route-selected', onAdminRouteSelected);
+    return () => window.removeEventListener('motolinks-admin-route-selected', onAdminRouteSelected);
   }, []);
 
   useEffect(() => {
