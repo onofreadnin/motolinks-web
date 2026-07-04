@@ -4,6 +4,7 @@ import { useAdminAuth } from '../context/AdminAuthContext';
 
 const adminNavItems = [
   { to: '/admin', label: 'Dashboard', end: true },
+  { to: '/admin/media', label: 'Media Review' },
   { to: '/admin/bugs', label: 'App Bugs' },
   { to: '/admin/reports', label: 'Moderation' },
 ];

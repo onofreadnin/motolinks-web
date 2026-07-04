@@ -3,6 +3,7 @@ import {
   getAdminMetrics,
   getAppBugReports,
   getModerationReports,
+  getMediaReviewItems,
   getRecentRiders,
 } from '../lib/adminApi';
 
@@ -19,6 +20,7 @@ export default function AdminDashboard() {
     appBugReports: [],
     metrics: null,
     moderationReports: [],
+    mediaReviewItems: [],
     riders: [],
   });
   const [loading, setLoading] = useState(true);
@@ -29,13 +31,14 @@ export default function AdminDashboard() {
     setError('');
 
     try {
-      const [metrics, appBugReports, moderationReports, riders] = await Promise.all([
+      const [metrics, appBugReports, moderationReports, mediaReviewItems, riders] = await Promise.all([
         getAdminMetrics(),
         getAppBugReports(),
         getModerationReports(),
+        getMediaReviewItems(),
         getRecentRiders(),
       ]);
-      setData({ appBugReports, metrics, moderationReports, riders });
+      setData({ appBugReports, metrics, moderationReports, mediaReviewItems, riders });
     } catch (loadError) {
       setError(loadError.message || 'Unable to load admin dashboard.');
     } finally {
@@ -55,6 +58,11 @@ export default function AdminDashboard() {
   const openBugCount = useMemo(
     () => data.appBugReports.filter((report) => report.status === 'open').length,
     [data.appBugReports],
+  );
+
+  const pendingMediaCount = useMemo(
+    () => data.mediaReviewItems.filter((item) => item.status === 'pending').length,
+    [data.mediaReviewItems],
   );
 
   const metrics = data.metrics;
@@ -112,6 +120,10 @@ export default function AdminDashboard() {
                 <div>
                   <strong>{openModerationCount}</strong>
                   <span>Open moderation reports</span>
+                </div>
+                <div>
+                  <strong>{pendingMediaCount}</strong>
+                  <span>Pending media reviews</span>
                 </div>
               </div>
             </article>

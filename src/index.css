@@ -1552,6 +1552,62 @@ h3 {
   font: 0.9rem/1.5 ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
 }
 
+.admin-media-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--space-4);
+}
+
+.admin-media-card {
+  overflow: hidden;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.admin-media-card__preview {
+  display: block;
+  aspect-ratio: 4 / 3;
+  background: rgba(0, 0, 0, 0.22);
+}
+
+.admin-media-card__preview img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.admin-media-card__body {
+  display: grid;
+  gap: var(--space-4);
+  padding: var(--space-4);
+}
+
+.admin-media-card__field {
+  display: grid;
+  gap: var(--space-2);
+  color: var(--color-steel-200);
+  font-weight: 800;
+}
+
+.admin-media-card__field textarea {
+  width: 100%;
+  resize: vertical;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3);
+  color: var(--color-white);
+  background: rgba(0, 0, 0, 0.22);
+  font: inherit;
+}
+
+.admin-media-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
 @media (max-width: 900px) {
   .header__inner {
     grid-template-columns: 1fr;
@@ -1624,7 +1680,7 @@ h3 {
   }
 
   .admin-nav {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   }
 
   .admin-main {

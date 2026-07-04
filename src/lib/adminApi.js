@@ -99,6 +99,36 @@ export async function getModerationReports() {
   }));
 }
 
+export async function getMediaReviewItems() {
+  if (!supabase) throw new Error('Supabase is not configured.');
+
+  const { data, error } = await supabase
+    .from('media_review_queue')
+    .select('*')
+    .order('created_at', { ascending: false })
+    .limit(100);
+
+  if (error) throw error;
+
+  const profiles = await getProfilesByIds((data ?? []).map((item) => item.user_id));
+  return (data ?? []).map((item) => ({
+    ...item,
+    user: profiles.get(item.user_id) ?? null,
+  }));
+}
+
+export async function reviewMediaItem(id, { status, rejectionReason }) {
+  if (!supabase) throw new Error('Supabase is not configured.');
+
+  const { error } = await supabase.rpc('review_media_item', {
+    p_review_id: id,
+    p_status: status,
+    p_rejection_reason: rejectionReason ?? null,
+  });
+
+  if (error) throw error;
+}
+
 export async function updateAppBugReport(id, updates) {
   if (!supabase) throw new Error('Supabase is not configured.');
 

@@ -15,6 +15,7 @@ import AdminLogin from './pages/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminBugReports from './pages/AdminBugReports';
 import AdminModerationReports from './pages/AdminModerationReports';
+import AdminMediaReview from './pages/AdminMediaReview';
 import AuthAction from './pages/AuthAction';
 
 function PublicPage({ children }) {
@@ -58,6 +59,7 @@ export default function App() {
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<AdminDashboard />} />
+            <Route path="media" element={<AdminMediaReview />} />
             <Route path="bugs" element={<AdminBugReports />} />
             <Route path="reports" element={<AdminModerationReports />} />
           </Route>
