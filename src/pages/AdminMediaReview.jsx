@@ -1,7 +1,13 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { getMediaReviewItems, reviewMediaItem } from '../lib/adminApi';
 
-const PAGE_SIZE = 12;
+const PAGE_SIZE = 15;
+const STATUS_OPTIONS = [
+  { value: 'all', label: 'All statuses' },
+  { value: 'pending', label: 'Pending' },
+  { value: 'approved', label: 'Approved' },
+  { value: 'rejected', label: 'Rejected' },
+];
 
 function formatDate(value) {
   if (!value) return '-';
@@ -27,6 +33,8 @@ export default function AdminMediaReview() {
   const [savingId, setSavingId] = useState('');
   const [rejectionReasons, setRejectionReasons] = useState({});
   const [page, setPage] = useState(1);
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [statusMenuOpen, setStatusMenuOpen] = useState(false);
   const [expandedItem, setExpandedItem] = useState(null);
 
   const loadItems = async () => {
@@ -59,6 +67,28 @@ export default function AdminMediaReview() {
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [expandedItem]);
 
+  useEffect(() => {
+    if (!statusMenuOpen) return undefined;
+
+    const onKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        setStatusMenuOpen(false);
+      }
+    };
+    const onPointerDown = (event) => {
+      if (!event.target.closest?.('.admin-status-menu')) {
+        setStatusMenuOpen(false);
+      }
+    };
+
+    window.addEventListener('keydown', onKeyDown);
+    window.addEventListener('pointerdown', onPointerDown);
+    return () => {
+      window.removeEventListener('keydown', onKeyDown);
+      window.removeEventListener('pointerdown', onPointerDown);
+    };
+  }, [statusMenuOpen]);
+
   const counts = useMemo(() => {
     return items.reduce((nextCounts, item) => {
       nextCounts[item.status] = (nextCounts[item.status] || 0) + 1;
@@ -66,16 +96,25 @@ export default function AdminMediaReview() {
     }, {});
   }, [items]);
 
-  const totalPages = Math.max(1, Math.ceil(items.length / PAGE_SIZE));
+  const filteredItems = useMemo(() => {
+    if (statusFilter === 'all') return items;
+    return items.filter((item) => item.status === statusFilter);
+  }, [items, statusFilter]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredItems.length / PAGE_SIZE));
   const pageItems = useMemo(() => {
     const safePage = Math.min(page, totalPages);
     const start = (safePage - 1) * PAGE_SIZE;
-    return items.slice(start, start + PAGE_SIZE);
-  }, [items, page, totalPages]);
+    return filteredItems.slice(start, start + PAGE_SIZE);
+  }, [filteredItems, page, totalPages]);
 
   useEffect(() => {
     setPage((currentPage) => Math.min(currentPage, totalPages));
   }, [totalPages]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [statusFilter]);
 
   const submitReview = async (item, status) => {
     setSavingId(item.id);
@@ -102,13 +141,14 @@ export default function AdminMediaReview() {
     setPage((currentPage) => Math.min(totalPages, currentPage + 1));
   };
 
-  const pagination = items.length > PAGE_SIZE ? (
+  const pagination = filteredItems.length > PAGE_SIZE ? (
     <div className="admin-pagination">
       <button className="button button--secondary" disabled={page <= 1} type="button" onClick={goToPreviousPage}>
         Previous
       </button>
       <span>
-        Showing {(page - 1) * PAGE_SIZE + 1}-{Math.min(page * PAGE_SIZE, items.length)} of {items.length}
+        Showing {(page - 1) * PAGE_SIZE + 1}-{Math.min(page * PAGE_SIZE, filteredItems.length)} of{' '}
+        {filteredItems.length}
       </span>
       <button className="button button--secondary" disabled={page >= totalPages} type="button" onClick={goToNextPage}>
         Next
@@ -145,8 +185,46 @@ export default function AdminMediaReview() {
                 {counts.rejected || 0}
               </p>
             </div>
-            {items.length > PAGE_SIZE ? (
-              <div className="admin-pagination admin-pagination--top">
+            <div className="admin-review-toolbar">
+              <label className="admin-select-field">
+                <span>Status</span>
+                <div className="admin-status-menu">
+                  <button
+                    className="admin-status-menu__button"
+                    type="button"
+                    aria-haspopup="listbox"
+                    aria-expanded={statusMenuOpen}
+                    onClick={() => setStatusMenuOpen((open) => !open)}
+                  >
+                    <span>{STATUS_OPTIONS.find((option) => option.value === statusFilter)?.label}</span>
+                    <span aria-hidden="true" className="admin-status-menu__chevron" />
+                  </button>
+                  {statusMenuOpen ? (
+                    <div className="admin-status-menu__list" role="listbox" aria-label="Filter media by status">
+                      {STATUS_OPTIONS.map((option) => (
+                        <button
+                          className={`admin-status-menu__option${
+                            option.value === statusFilter ? ' admin-status-menu__option--selected' : ''
+                          }`}
+                          key={option.value}
+                          type="button"
+                          role="option"
+                          aria-selected={option.value === statusFilter}
+                          onClick={() => {
+                            setStatusFilter(option.value);
+                            setStatusMenuOpen(false);
+                          }}
+                        >
+                          <span>{option.label}</span>
+                          {option.value === statusFilter ? <span aria-hidden="true">✓</span> : null}
+                        </button>
+                      ))}
+                    </div>
+                  ) : null}
+                </div>
+              </label>
+              {filteredItems.length > PAGE_SIZE ? (
+                <div className="admin-pagination admin-pagination--top">
                 <button className="button button--secondary" disabled={page <= 1} type="button" onClick={goToPreviousPage}>
                   Previous
                 </button>
@@ -161,23 +239,26 @@ export default function AdminMediaReview() {
                 >
                   Next
                 </button>
-              </div>
-            ) : null}
+                </div>
+              ) : null}
+            </div>
           </div>
 
-          {items.length === 0 ? (
-            <p className="admin-muted">No media uploads found.</p>
+          {filteredItems.length === 0 ? (
+            <p className="admin-muted">
+              {items.length === 0 ? 'No media uploads found.' : 'No media uploads match this status.'}
+            </p>
           ) : (
             <>
-              <div className="admin-media-grid">
+              <div className="admin-media-list">
                 {pageItems.map((item) => {
                   const saving = savingId === item.id;
                   const disabled = saving || item.status !== 'pending';
 
                   return (
-                    <section className="admin-media-card" key={item.id}>
+                    <section className="admin-media-row" key={item.id}>
                       <button
-                        className="admin-media-card__preview"
+                        className="admin-media-row__preview"
                         type="button"
                         onClick={() => setExpandedItem(item)}
                       >
@@ -185,16 +266,12 @@ export default function AdminMediaReview() {
                         <span>Click to expand</span>
                       </button>
 
-                      <div className="admin-media-card__body">
-                        <div className="admin-report-card__heading">
-                          <div>
-                            <span className="admin-badge">{mediaLabel(item.media_type)}</span>
-                            <h3>{riderName(item.user, item.user_id)}</h3>
-                          </div>
-                          <span className={`admin-badge admin-badge--${item.status}`}>{item.status}</span>
+                      <div className="admin-media-row__main">
+                        <div className="admin-media-row__heading">
+                          <span className="admin-badge">{mediaLabel(item.media_type)}</span>
+                          <h3>{riderName(item.user, item.user_id)}</h3>
                         </div>
-
-                        <dl className="admin-meta-grid">
+                        <dl className="admin-media-row__meta">
                           <div>
                             <dt>Uploaded</dt>
                             <dd>{formatDate(item.created_at)}</dd>
@@ -209,16 +286,19 @@ export default function AdminMediaReview() {
                           </div>
                           <div>
                             <dt>Path</dt>
-                            <dd>{item.storage_path}</dd>
+                            <dd title={item.storage_path}>{item.storage_path}</dd>
                           </div>
                         </dl>
+                      </div>
 
+                      <div className="admin-media-row__status">
+                        <span className={`admin-badge admin-badge--${item.status}`}>{item.status}</span>
                         {item.status === 'pending' ? (
                           <>
-                            <label className="admin-media-card__field">
+                            <label className="admin-media-row__field">
                               <span>Reject reason</span>
                               <textarea
-                                rows="3"
+                                rows="2"
                                 disabled={disabled}
                                 value={rejectionReasons[item.id] ?? item.rejection_reason ?? ''}
                                 onChange={(event) =>
@@ -230,7 +310,7 @@ export default function AdminMediaReview() {
                               />
                             </label>
 
-                            <div className="admin-media-card__actions">
+                            <div className="admin-media-row__actions">
                               <button
                                 className="button button--primary"
                                 disabled={disabled}
@@ -250,7 +330,7 @@ export default function AdminMediaReview() {
                             </div>
                           </>
                         ) : (
-                          <div className="admin-media-card__reviewed">
+                          <div className="admin-media-row__reviewed">
                             <button
                               className={`button admin-review-state admin-review-state--${item.status}`}
                               disabled
